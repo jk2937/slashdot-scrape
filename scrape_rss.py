@@ -74,22 +74,24 @@ def scrape_slashdot():
     print("\n\nAdd to database:\n")
 
     sql_connection = sqlite3.connect("database.db")
-
     cursor = sql_connection.cursor()
 
     cursor.execute("CREATE TABLE IF NOT EXISTS articles( id INTEGER PRIMARY KEY AUTOINCREMENT, scrape_date TEXT, title TEXT, description TEXT, link TEXT );")
     sql_connection.commit()
 
     for article in articles:
-        cursor.execute("SELECT COUNT(1) FROM articles WHERE title = ?", (article["title"],))
+        cursor.execute("SELECT COUNT(1) FROM articles WHERE title = ?;", (article["title"],))
         count = cursor.fetchone()[0]
 
         if count == 0:
-            cursor.execute("INSERT INTO articles( title, description, link ) VALUES ( ?, ?, ? );", (article["title"], article["description"], article["link"]) )
+            cursor.execute("INSERT INTO articles( scrape_date, title, description, link ) VALUES ( ?, ?, ?, ? );", (date_str, article["title"], article["description"], article["link"]) )
             sql_connection.commit()
 
         else:
             print("Skipping duplicate database entry. (" + article["title"] + ")")
+
+    cursor.close()
+    sql_connection.close()
 
 if __name__ == "__main__":
     scrape_slashdot()

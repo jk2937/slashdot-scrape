@@ -2,3 +2,4 @@
 *.xml
 __pycache__/
 old_xml/
+venv/
