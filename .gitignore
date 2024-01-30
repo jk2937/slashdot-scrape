@@ -1,3 +1,4 @@
 *.swp
 *.xml
 __pycache__/
+old_xml/
