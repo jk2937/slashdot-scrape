@@ -5,5 +5,6 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 source venv/bin/activate
+python3 scrape_rss.py
 python3 zero_shot_analysis.py
 deactivate

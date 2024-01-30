@@ -88,7 +88,7 @@ def scrape_slashdot():
             sql_connection.commit()
 
         else:
-            print("Skipping duplicate database entry. (" + article["title"] + ")")
+            print("Skipping duplicate database entry: " + article["title"])
 
     cursor.close()
     sql_connection.close()

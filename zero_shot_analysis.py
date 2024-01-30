@@ -38,14 +38,32 @@ for row in data:
         "link": link
     }
 
-    analysis = classifier(
-        row_data["title"] + "\n" + row_data["description"],
-        candidate_labels=[label]
-    )
-    score = analysis["scores"][0]
+    cursor.execute("SELECT COUNT(1) FROM ZeroShotAnalysis WHERE ArticleID = ? AND Label = ?;", (row_data["id"], label))
+    count = cursor.fetchone()[0]
 
-    cursor.execute("INSERT INTO ZeroShotAnalysis ( ArticleID, AnalysisDate, Label, Score ) VALUES ( ?, ?, ?, ? );", (row_data["id"], date_str, label, score)) 
-    connection.commit()
+    if count == 0:
+        print("Classifying.")
+
+        analysis = classifier(
+            row_data["title"] + "\n" + row_data["description"],
+            candidate_labels=[label]
+        )
+        score = analysis["scores"][0]
+
+        cursor.execute("INSERT INTO ZeroShotAnalysis ( ArticleID, AnalysisDate, Label, Score ) VALUES ( ?, ?, ?, ? );", (row_data["id"], date_str, label, score)) 
+        connection.commit()
+
+    else:
+        print("Skipping duplicate database entry: " + row_data["title"])
+
+
+cursor.execute("SELECT articles.title, ZeroShotAnalysis.Score FROM articles INNER JOIN ZeroShotAnalysis ON articles.id = ZeroShotAnalysis.ArticleID;")
+data = cursor.fetchall()
+
+for row in data:
+    print(row)
+
+print(str(len(data)) + " rows total.")
 
 cursor.close()
 connection.close()
